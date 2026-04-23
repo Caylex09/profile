@@ -4,21 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caylex Terminal Profile</title>
+    <title>Caylex terminal portfolio</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <div id="crt-overlay"></div>
-    <div id="terminal">
-        <div id="output"></div>
-        <div class="input-line">
-            <span class="prompt">visitor@homepage:~$</span>
-            <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
+    <!-- 模拟 macOS 的窗口边框 -->
+    <div id="window-frame">
+        <div id="title-bar">
+            <div id="win-buttons">
+                <div class="win-btn close"></div>
+                <div class="win-btn minimize"></div>
+                <div class="win-btn expand"></div>
+            </div>
+            <div id="win-title"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2FhYSIgZD0iTTIwLDRIMEMyLjksNCwyLDUuOSwyLDh2MTJjMCwyLjIsMC45LDQsMiw0aDE2YzEuMSwwLDItMS44LDItNHYtMTJDMjIsNS45LDIxLjEsNCwyMCw0eiBNMTkuNCwxNy4xYy0wLjQsMC40LTAuOSwwLjQtMS4zLDBsLTUtNWMtMC40LTAuNC0wLjQtMSwwLDEuM2wxLjMsMS4zbDEuMywxLjNjMCwwLDAsMCwwLDBsLTUuNy01LjdsNS43LTUuN2MwLjQsLTAuNCwxLC0wLjQsMS4zLDBzMC40LDEsMCwxLjNsLTMuNywzLjdsMy43LDMuN2MwLjQsMC40LDAuNCwxLDAsMS4zWiBNMTMsMThoLTRjLTAuNiwwLTEtMC40LTEtMXMwLjQtMSwxLTFoNGMwLjYsMCwxLDAuNCwxLDFTMTMuNiwxOCwxMywxOHoiLz48L3N2Zz4=" alt="icon"> visitor@caylex.dev</div>
+        </div>
+        <div id="terminal-body">
+            <div id="output"></div>
+            <div class="input-line">
+                <span class="prompt"><span class="user">visitor</span><span class="symbol">@</span><span class="host">caylex.dev</span><span class="symbol">:</span><span class="path">~</span><span class="symbol">$</span></span>
+                <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
+            </div>
         </div>
     </div>
 
-    <!-- 分离的 JS 文件 -->
     <script src="js/commands.js"></script>
     <script src="js/main.js"></script>
 </body>

@@ -1,90 +1,89 @@
 const inputElement = document.getElementById('command-input');
 const outputElement = document.getElementById('output');
+const terminalBody = document.getElementById('terminal-body');
 
-// 终端初始化欢迎语
-const WELCOME_MESSAGE = `
-Welcome to CaylexOS v1.0.0 LTS (GNU/Linux 5.15.0-x86_64)
+// 提取提示符的HTML并保持和页面DOM一致
+const PROMPT_HTML = \`<span class="prompt"><span class="user">visitor</span><span class="symbol">@</span><span class="host">caylex.dev</span><span class="symbol">:</span><span class="path">~</span><span class="symbol">$</span></span>\`;
 
- * Documentation:  https://github.com/Caylex09
- * Welcome back to your homepage console.
+const WELCOME_MESSAGE = \`
+<span class="ascii-art">   ____            _           </span>
+<span class="ascii-art">  / ___|__ _ _   _| | _____  __</span>
+<span class="ascii-art"> | |   / _\` | | | | |/ _ \\ \\/ /</span>
+<span class="ascii-art"> | |__| (_| | |_| | |  __/>  < </span>
+<span class="ascii-art">  \\____\\__,_|\\__, |_|\\___/_/\\_\\</span>
+<span class="ascii-art">             |___/             </span>
 
-Type 'help' to see all available commands.
-======================================================
-`;
+Welcome to my terminal portfolio. (Version 1.0.0)
+----
+This project's source code can be seen in <a href="https://github.com/Caylex09" target="_blank">GitHub</a>.
+----
+For a list of available commands, type <span style="color:var(--host-color)">'help'</span>.
+\`;
 
-// 输出处理函数
 function printToTerminal(content, isCommand = false, commandText = '') {
-    // 渲染用户输入历史
     if (isCommand) {
-        outputElement.innerHTML += \`\n<div class="input-line"><span class="prompt">visitor@homepage:~$</span> \${commandText}</div>\`;
+        outputElement.innerHTML += \`\\n<div class="input-line">\${PROMPT_HTML} \${commandText}</div>\`;
     }
     
-    // 如果有响应文本，进行渲染
     if (content) {
-        // 安全处理 HTML 标签，避免乱解析
-        let formattedText = content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        // 把其中长得像链接的内容解析为 <a> 标签
-        formattedText = formattedText.replace(/(https?:\\/\\/[^\\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+        // 先替换原本的文本防止转义失效，但在欢迎信息等本身带HTML的直接放行
+        let formattedText = content;
+        if (!content.includes('<span class=')) {
+            formattedText = formattedText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            formattedText = formattedText.replace(/(https?:\\/\\/[^\\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+        }
         
         outputElement.innerHTML += \`\\n<div style="margin-bottom: 10px;">\${formattedText}</div>\`;
     }
     
-    // 每打印一次都滚动到页面底部
-    window.scrollTo(0, document.body.scrollHeight);
+    // 我们使用了内嵌滚动框（因为加了窗口外壳）
+    terminalBody.scrollTop = terminalBody.scrollHeight;
 }
 
-// 执行命令的核心逻辑
 function executeCommand(rawCmd) {
     const cmdLower = rawCmd.trim().toLowerCase();
 
-    // 处理空输入
     if (cmdLower === '') {
         printToTerminal('', true, '');
         return;
     }
 
-    // 处理特殊自带命令: clear（清屏）
     if (cmdLower === 'clear') {
         outputElement.innerHTML = '';
-        window.scrollTo(0, 0); // 滚回顶部
+        terminalBody.scrollTop = 0;
         return;
     }
 
-    // 处理特殊自带命令: date（日期）
     if (cmdLower === 'date') {
         printToTerminal(new Date().toString(), true, rawCmd);
         return;
     }
 
-    // 匹配 commands.js 中的指令
     const response = window.C_COMMANDS[cmdLower];
     
     if (response !== undefined) {
-         printToTerminal(response, true, rawCmd);
+        // 允许 commands 输出原始文本避免直接走安全处理（如果在 command 里面带了颜色标签也可以支持）
+        printToTerminal(response, true, rawCmd);
     } else {
-         printToTerminal(\`bash: \${rawCmd}: command not found\`, true, rawCmd);
+        printToTerminal(\`bash: \${rawCmd}: command not found\`, true, rawCmd);
     }
 }
 
-// 模拟敲击打字效果
 async function autoTypeCommand(cmd) {
     inputElement.value = '';
     for (let i = 0; i < cmd.length; i++) {
         inputElement.value += cmd[i];
-        // 降低每次打字的时间到20~50ms，看起来自然又快速
-        await new Promise(r => setTimeout(r, Math.random() * 30 + 20)); 
+        await new Promise(r => setTimeout(r, Math.random() * 40 + 30)); 
     }
-    await new Promise(r => setTimeout(r, 300)); // 停顿一会再回车
+    await new Promise(r => setTimeout(r, 400)); 
     
-    inputElement.value = ''; // 清空
+    inputElement.value = '';
     executeCommand(cmd);
 }
 
-// 初次加载事件
 window.addEventListener('DOMContentLoaded', async () => {
     printToTerminal(WELCOME_MESSAGE.trim());
     
-    // 自动演示流程期间禁用输入
     inputElement.disabled = true;
     inputElement.blur();
     
@@ -94,24 +93,20 @@ window.addEventListener('DOMContentLoaded', async () => {
     await new Promise(r => setTimeout(r, 400));
     await autoTypeCommand('help');
     
-    // 恢复输入并自动聚焦
     inputElement.disabled = false;
     inputElement.focus();
 });
 
-// 任何时候点击页面都会让输入框获取焦点
 document.addEventListener('click', () => {
     if (!inputElement.disabled) {
         inputElement.focus();
     }
 });
 
-// 监听键盘按键
 inputElement.addEventListener('keydown', function(event) {
-    // 检查是否按下的是回车键
     if (event.key === 'Enter') {
         const rawCmd = this.value;
-        this.value = ''; // 清空输入框
+        this.value = ''; 
         executeCommand(rawCmd);
     }
 });

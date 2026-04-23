@@ -1,63 +1,105 @@
-/* 经典复古终端样式 */
 :root {
-    --bg-color: #0d0d0d; /* 更深邃的黑底 */
-    --fg-color: #00ff41; /* 经典黑客绿 */
-    --prompt-color: #ffb86c; /* 用户名提示改个颜色，更显层次 */
-    --error-color: #ff5555;
-    --glow: 0 0 10px rgba(0, 255, 65, 0.4);
+    /* Dracula / Nord 吸血鬼暗调配色 */
+    --bg-color: #282a36;        /* 柔和的深沉背景 */
+    --fg-color: #f8f8f2;        /* 柔和的主文本色 */
+    
+    --user-color: #f1fa8c;      /* 黄色 - visitor */
+    --host-color: #50fa7b;      /* 绿色 - 主机名 */
+    --path-color: #bd93f9;      /* 紫色 - 路径 */
+    --symbol-color: #f8f8f2;    /* 符号颜色 */
+    
+    --link-color: #8be9fd;      /* 青色 - 超链接 */
+    --comment-color: #6272a4;   /* 灰色 - 注释或次要信息 */
+    
+    --window-bg: #21222c;       /* 标题栏背景 */
 }
 
 body {
-    background-color: var(--bg-color);
+    background-color: #1e1e1e; /* 网页底部背景，使窗口突显 */
     color: var(--fg-color);
-    font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
     margin: 0;
-    padding: 30px;
-    height: 100vh;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    font-size: 17px;
-    text-shadow: var(--glow);
-    /* 文字发光效果 */
-}
-
-/* 模拟 CRT 显示器的扫描线效果 */
-#crt-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%,
-        rgba(0, 0, 0, 0.20) 50%
-    );
-    background-size: 100% 4px;
-    /* 扫描线粗细 */
-    pointer-events: none;
-    /* 穿透点击事件 */
-    z-index: 100;
-    animation: flicker 0.15s infinite; /* 屏幕轻微闪烁动画 */
-}
-
-@keyframes flicker {
-    0%   { opacity: 0.95; }
-    50%  { opacity: 1; }
-    100% { opacity: 0.98; }
-}
-
-#terminal {
-    max-width: 900px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
     line-height: 1.6;
-    padding-bottom: 50px;
+}
+
+#window-frame {
+    width: 90%;
+    max-width: 1000px;
+    height: 85vh;
+    background-color: var(--bg-color);
+    border-radius: 10px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* 圆角隐藏越界部分 */
+}
+
+/* 标题栏 */
+#title-bar {
+    height: 40px;
+    background-color: var(--window-bg);
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    position: relative;
+    user-select: none;
+}
+
+#win-buttons {
+    display: flex;
+    gap: 8px;
+    position: absolute;
+    left: 15px;
+}
+
+.win-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.close    { background-color: #ff5f56; }
+.minimize { background-color: #ffbd2e; }
+.expand   { background-color: #27c93f; }
+
+#win-title {
+    margin: 0 auto;
+    color: #888;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+#win-title img {
+    height: 14px;
+    opacity: 0.6;
+}
+
+/* 终端内部 */
+#terminal-body {
+    padding: 30px;
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#terminal-body::-webkit-scrollbar {
+    width: 8px;
+}
+#terminal-body::-webkit-scrollbar-thumb {
+    background: #44475a;
+    border-radius: 4px;
 }
 
 #output {
     white-space: pre-wrap;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     word-wrap: break-word;
 }
 
@@ -66,12 +108,19 @@ body {
     align-items: center;
 }
 
+/* 多颜色提示符 */
 .prompt {
-    color: var(--prompt-color);
-    margin-right: 10px;
+    margin-right: 8px;
     font-weight: bold;
     white-space: nowrap;
-    text-shadow: 0 0 8px rgba(255, 184, 108, 0.5); /* 提示符的发光 */
+}
+.prompt .user { color: var(--user-color); }
+.prompt .host { color: var(--host-color); }
+.prompt .path { color: var(--path-color); }
+.prompt .symbol { color: var(--symbol-color); }
+.ascii-art {
+    color: var(--host-color);
+    font-weight: bold;
 }
 
 #command-input {
@@ -83,25 +132,23 @@ body {
     flex-grow: 1;
     outline: none !important;
     padding: 0;
-    text-shadow: var(--glow);
-    caret-color: var(--fg-color); /* 终端的绿色光标（现代浏览器支持） */
-    box-shadow: none !important;
+    caret-color: var(--fg-color); 
 }
 
-/* 将默认的光标表现得像一个方块 (有些浏览器支持::selection或光标样式) */
 #command-input::selection {
-    background: var(--fg-color);
-    color: var(--bg-color);
+    background: #44475a;
+    color: var(--fg-color);
 }
 
-/* 匹配的链接样式 */
 a {
-    color: #4da8da;
+    color: var(--link-color);
     text-decoration: none;
-    text-shadow: 0 0 8px rgba(77, 168, 218, 0.4);
+    border-bottom: 1px dashed var(--link-color);
+    padding-bottom: 1px;
 }
 
 a:hover {
-    text-decoration: underline;
-    text-shadow: 0 0 12px rgba(77, 168, 218, 0.8);
+    background-color: var(--link-color);
+    color: var(--bg-color);
+    text-decoration: none;
 }
