@@ -1,10 +1,8 @@
 /* 经典复古终端样式 */
 :root {
-    --bg-color: #0d0d0d;
-    /* 更深邃的黑 */
-    --fg-color: #00ff41;
-    --prompt-color: #ffb86c;
-    /* 提示符换个颜色更显眼 */
+    --bg-color: #0d0d0d; /* 更深邃的黑底 */
+    --fg-color: #00ff41; /* 经典黑客绿 */
+    --prompt-color: #ffb86c; /* 用户名提示改个颜色，更显层次 */
     --error-color: #ff5555;
     --glow: 0 0 10px rgba(0, 255, 65, 0.4);
 }
@@ -18,7 +16,7 @@ body {
     height: 100vh;
     box-sizing: border-box;
     overflow-x: hidden;
-    font-size: 16px;
+    font-size: 17px;
     text-shadow: var(--glow);
     /* 文字发光效果 */
 }
@@ -30,29 +28,22 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%,
-            rgba(0, 0, 0, 0.25) 50%);
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%,
+        rgba(0, 0, 0, 0.20) 50%
+    );
     background-size: 100% 4px;
     /* 扫描线粗细 */
     pointer-events: none;
     /* 穿透点击事件 */
     z-index: 100;
-    animation: flicker 0.15s infinite;
-    /* 屏幕轻微闪烁动画 */
+    animation: flicker 0.15s infinite; /* 屏幕轻微闪烁动画 */
 }
 
 @keyframes flicker {
-    0% {
-        opacity: 0.95;
-    }
-
-    50% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0.98;
-    }
+    0%   { opacity: 0.95; }
+    50%  { opacity: 1; }
+    100% { opacity: 0.98; }
 }
 
 #terminal {
@@ -80,29 +71,37 @@ body {
     margin-right: 10px;
     font-weight: bold;
     white-space: nowrap;
+    text-shadow: 0 0 8px rgba(255, 184, 108, 0.5); /* 提示符的发光 */
 }
 
 #command-input {
-    background: transparent;
-    border: none;
-    color: var(--fg-color);
+    background: transparent !important;
+    border: none !important;
+    color: var(--fg-color) !important;
     font-family: inherit;
     font-size: inherit;
     flex-grow: 1;
-    outline: none;
+    outline: none !important;
     padding: 0;
     text-shadow: var(--glow);
-    caret-color: var(--fg-color);
-    /* 终端的绿色光标 */
+    caret-color: var(--fg-color); /* 终端的绿色光标（现代浏览器支持） */
+    box-shadow: none !important;
+}
+
+/* 将默认的光标表现得像一个方块 (有些浏览器支持::selection或光标样式) */
+#command-input::selection {
+    background: var(--fg-color);
+    color: var(--bg-color);
 }
 
 /* 匹配的链接样式 */
 a {
     color: #4da8da;
     text-decoration: none;
+    text-shadow: 0 0 8px rgba(77, 168, 218, 0.4);
 }
 
 a:hover {
     text-decoration: underline;
-    text-shadow: 0 0 5px #4da8da;
+    text-shadow: 0 0 12px rgba(77, 168, 218, 0.8);
 }
