@@ -1,21 +1,31 @@
 :root {
     /* Dracula / Nord 吸血鬼暗调配色 */
-    --bg-color: #282a36;        /* 柔和的深沉背景 */
-    --fg-color: #f8f8f2;        /* 柔和的主文本色 */
-    
-    --user-color: #f1fa8c;      /* 黄色 - visitor */
-    --host-color: #50fa7b;      /* 绿色 - 主机名 */
-    --path-color: #bd93f9;      /* 紫色 - 路径 */
-    --symbol-color: #f8f8f2;    /* 符号颜色 */
-    
-    --link-color: #8be9fd;      /* 青色 - 超链接 */
-    --comment-color: #6272a4;   /* 灰色 - 注释或次要信息 */
-    
-    --window-bg: #21222c;       /* 标题栏背景 */
+    --bg-color: #282a36;
+    /* 柔和的深沉背景 */
+    --fg-color: #f8f8f2;
+    /* 柔和的主文本色 */
+
+    --user-color: #f1fa8c;
+    /* 黄色 - visitor */
+    --host-color: #50fa7b;
+    /* 绿色 - 主机名 */
+    --path-color: #bd93f9;
+    /* 紫色 - 路径 */
+    --symbol-color: #f8f8f2;
+    /* 符号颜色 */
+
+    --link-color: #8be9fd;
+    /* 青色 - 超链接 */
+    --comment-color: #6272a4;
+    /* 灰色 - 注释或次要信息 */
+
+    --window-bg: #21222c;
+    /* 标题栏背景 */
 }
 
 body {
-    background-color: #1e1e1e; /* 网页底部背景，使窗口突显 */
+    background-color: #1e1e1e;
+    /* 网页底部背景，使窗口突显 */
     color: var(--fg-color);
     font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
     margin: 0;
@@ -37,12 +47,15 @@ body {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* 圆角隐藏越界部分 */
+    overflow: hidden;
+    /* 圆角隐藏越界部分 */
 }
 
 /* 标题栏 */
 #title-bar {
     height: 40px;
+    flex-shrink: 0;
+    /* 绝对禁止标题栏被下方长内容压缩变长 (防止顶部变动晃眼) */
     background-color: var(--window-bg);
     display: flex;
     align-items: center;
@@ -63,9 +76,18 @@ body {
     height: 12px;
     border-radius: 50%;
 }
-.close    { background-color: #ff5f56; }
-.minimize { background-color: #ffbd2e; }
-.expand   { background-color: #27c93f; }
+
+.close {
+    background-color: #ff5f56;
+}
+
+.minimize {
+    background-color: #ffbd2e;
+}
+
+.expand {
+    background-color: #27c93f;
+}
 
 #win-title {
     margin: 0 auto;
@@ -76,6 +98,7 @@ body {
     gap: 6px;
     font-family: system-ui, -apple-system, sans-serif;
 }
+
 #win-title img {
     height: 14px;
     opacity: 0.6;
@@ -83,15 +106,22 @@ body {
 
 /* 终端内部 */
 #terminal-body {
+    min-height: 0;
     padding: 30px;
     flex-grow: 1;
     overflow-y: auto;
+    /* 配合 stable，体验最佳 */
+    scrollbar-gutter: stable;
+    /* 无论什么时候始终在右侧预留滚动条的物理空间，彻底杜绝文字左移排版重排的闪烁 */
     overflow-x: hidden;
 }
 
 #terminal-body::-webkit-scrollbar {
     width: 8px;
+    background-color: transparent;
+    /* 始终透明占位 */
 }
+
 #terminal-body::-webkit-scrollbar-thumb {
     background: #44475a;
     border-radius: 4px;
@@ -99,13 +129,15 @@ body {
 
 #output {
     white-space: pre-wrap;
-    margin-bottom: 5px;
+    /* 去除 margin-bottom 避免输入命令按回车后产生上下跳动的位移落差 */
     word-wrap: break-word;
 }
 
 .input-line {
     display: flex;
     align-items: center;
+    min-height: 1.6em;
+    /* 确保历史命令和当前包含输入框的行高完全一致，绝不压缩 */
 }
 
 /* 多颜色提示符 */
@@ -114,10 +146,23 @@ body {
     font-weight: bold;
     white-space: nowrap;
 }
-.prompt .user { color: var(--user-color); }
-.prompt .host { color: var(--host-color); }
-.prompt .path { color: var(--path-color); }
-.prompt .symbol { color: var(--symbol-color); }
+
+.prompt .user {
+    color: var(--user-color);
+}
+
+.prompt .host {
+    color: var(--host-color);
+}
+
+.prompt .path {
+    color: var(--path-color);
+}
+
+.prompt .symbol {
+    color: var(--symbol-color);
+}
+
 .ascii-art {
     color: var(--host-color);
     font-weight: bold;
@@ -132,7 +177,9 @@ body {
     flex-grow: 1;
     outline: none !important;
     padding: 0;
-    caret-color: var(--fg-color); 
+    margin: 0;
+    caret-color: var(--fg-color);
+    line-height: 1.6;
 }
 
 #command-input::selection {
