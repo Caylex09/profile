@@ -38,26 +38,46 @@ function printToTerminal(content, isCommand = false, commandText = '') {
     terminalBody.scrollTop = terminalBody.scrollHeight;
 }
 
-function executeCommand(rawCmd) {
-    const cmdLower = rawCmd.trim().toLowerCase();
+function scrollTerminalToBottom() {
+    terminalBody.scrollTop = terminalBody.scrollHeight;
+}
 
-    if (cmdLower === '') {
+function executeCommand(rawCmd) {
+    const trimmedRawCmd = rawCmd.trim();
+
+    if (trimmedRawCmd === '') {
         printToTerminal('', true, '');
         return;
     }
 
-    if (cmdLower === 'clear') {
+    const inputTokens = trimmedRawCmd.split(/\s+/);
+    const cmdBase = inputTokens[0].toLowerCase();
+    const cmdArgs = inputTokens.slice(1);
+
+    if (cmdBase === 'sudo') {
+        printToTerminal(window.C_COMMANDS.sudo, true, rawCmd);
+        return;
+    }
+
+    // 当前所有内置命令都不接受参数，避免 ls ls 这类输入被误判为合法。
+    const noArgCommands = new Set([...Object.keys(window.C_COMMANDS || {}), 'clear', 'date', 'poem']);
+    if (noArgCommands.has(cmdBase) && cmdArgs.length > 0) {
+        printToTerminal(`bash: ${cmdBase}: too many arguments`, true, rawCmd);
+        return;
+    }
+
+    if (cmdBase === 'clear') {
         outputElement.innerHTML = '';
         terminalBody.scrollTop = 0;
         return;
     }
 
-    if (cmdLower === 'date') {
+    if (cmdBase === 'date') {
         printToTerminal(new Date().toString(), true, rawCmd);
         return;
     }
 
-    if (cmdLower === 'poem') {
+    if (cmdBase === 'poem') {
         // 先打印命令行占位
         printToTerminal('', true, rawCmd);
 
@@ -73,7 +93,7 @@ function executeCommand(rawCmd) {
         return;
     }
 
-    const response = window.C_COMMANDS[cmdLower];
+    const response = window.C_COMMANDS[cmdBase];
 
     if (response !== undefined) {
         // 允许 commands 输出原始文本避免直接走安全处理（如果在 command 里面带了颜色标签也可以支持）
@@ -129,10 +149,19 @@ document.addEventListener('click', () => {
 
     if (!inputElement.disabled) {
         inputElement.focus();
+        scrollTerminalToBottom();
     }
 });
 
+inputElement.addEventListener('input', () => {
+    // 输入过程中始终保持终端视口跟随到最后一行
+    scrollTerminalToBottom();
+});
+
 inputElement.addEventListener('keydown', function (event) {
+    // 按键操作（包括上下历史）时保持终端在底部
+    scrollTerminalToBottom();
+
     // 1. 处理回车键执行
     if (event.key === 'Enter') {
         const rawCmd = this.value;
