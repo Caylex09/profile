@@ -14,7 +14,7 @@ const CONTACT = `
 
 const PROJECTS = `
 [01] 博客: https://blog.cyx2009.top
-[02] Buy Me a Coffee / V 我 50: https://img.cyx2009.top
+[02] Buy Me a Coffee / V 我 50: https://album.cyx2009.top
 [03] 实验室: https://lab.cyx2009.top
 `;
 
@@ -34,12 +34,12 @@ const HELP = `
 
 // 导出作为一个全局字典供 main.js 使用
 window.C_COMMANDS = {
-    'help': HELP.trim(),
-    'about': ABOUT_ME.trim(),
-    'projects': PROJECTS.trim(),
-    'contact': CONTACT.trim(),
-    'whoami': 'visitor',
-    'sudo': 'Access denied. This incident will be reported to Caylex.',
-    'ls': 'index.html  css/  js/  README.md LICENSE',
-    'ping': 'pong',
+  'help': HELP.trim(),
+  'about': ABOUT_ME.trim(),
+  'projects': PROJECTS.trim(),
+  'contact': CONTACT.trim(),
+  'whoami': 'visitor',
+  'sudo': 'Access denied. This incident will be reported to Caylex.',
+  'ls': 'index.html  css/  js/  README.md LICENSE',
+  'ping': 'pong',
 };
